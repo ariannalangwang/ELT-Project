@@ -1,0 +1,56 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+*.egg-info/
+dist/
+build/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+!env.example
+
+# dbt
+data_transformation/dvd_rental/target/
+data_transformation/dvd_rental/dbt_packages/
+data_transformation/dvd_rental/logs/
+data_transformation/dvd_rental/.user.yml
+
+# Sensitive files - NEVER COMMIT THESE!
+# Note: profiles.yml with env_var() templates is SAFE to commit
+# Only profiles.yml with actual secrets should be excluded
+credentials.json
+*.pem
+*.key
+*_local.yml
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Data
+*.csv
+*.parquet
+*.db
+*.sqlite
+
+# Logs
+*.log
+
+# Docker
+.docker/
+
+# OS
+Thumbs.db
