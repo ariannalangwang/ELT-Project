@@ -1,0 +1,517 @@
+version: 2
+
+sources:
+  - name: dvd_rental
+    description: "DVD rental store database containing information about films, customers, rentals, and payments"
+    database: workspace
+    schema: dvd_rental
+    
+    tables:
+      # Core business entities
+      - name: film
+        description: "Information about films available for rent"
+        columns:
+          - name: film_id
+            description: "Primary key for film"
+            tests:
+              - unique
+              - not_null
+          - name: title
+            description: "Film title"
+            tests:
+              - not_null
+          - name: description
+            description: "Short description or plot summary of the film"
+          - name: release_year
+            description: "Year the film was released"
+          - name: language_id
+            description: "Foreign key to language table"
+            tests:
+              - not_null
+          - name: rental_duration
+            description: "Default rental duration in days"
+            tests:
+              - not_null
+          - name: rental_rate
+            description: "Cost to rent the film for the rental duration"
+            tests:
+              - not_null
+          - name: length
+            description: "Duration of the film in minutes"
+          - name: replacement_cost
+            description: "Cost to replace the film if lost or damaged"
+            tests:
+              - not_null
+          - name: rating
+            description: "Film rating (G, PG, PG-13, R, NC-17)"
+          - name: special_features
+            description: "Special features on the DVD (e.g., Trailers, Deleted Scenes)"
+          - name: last_update
+            description: "Timestamp of last update"
+            tests:
+              - not_null
+
+      - name: actor
+        description: "Information about actors"
+        columns:
+          - name: actor_id
+            description: "Primary key for actor"
+            tests:
+              - unique
+              - not_null
+          - name: first_name
+            description: "Actor first name"
+            tests:
+              - not_null
+          - name: last_name
+            description: "Actor last name"
+            tests:
+              - not_null
+          - name: last_update
+            description: "Timestamp of last update"
+            tests:
+              - not_null
+
+      - name: customer
+        description: "Information about customers"
+        columns:
+          - name: customer_id
+            description: "Primary key for customer"
+            tests:
+              - unique
+              - not_null
+          - name: store_id
+            description: "Foreign key to store where customer is registered"
+            tests:
+              - not_null
+          - name: first_name
+            description: "Customer first name"
+            tests:
+              - not_null
+          - name: last_name
+            description: "Customer last name"
+            tests:
+              - not_null
+          - name: email
+            description: "Customer email address"
+          - name: address_id
+            description: "Foreign key to customer address"
+            tests:
+              - not_null
+          - name: activebool
+            description: "Whether customer is active (boolean)"
+            tests:
+              - not_null
+          - name: create_date
+            description: "Date customer was added to system"
+            tests:
+              - not_null
+          - name: last_update
+            description: "Timestamp of last update"
+          - name: active
+            description: "Whether customer is active (integer)"
+
+      - name: staff
+        description: "Information about store staff members"
+        columns:
+          - name: staff_id
+            description: "Primary key for staff"
+            tests:
+              - unique
+              - not_null
+          - name: first_name
+            description: "Staff member first name"
+            tests:
+              - not_null
+          - name: last_name
+            description: "Staff member last name"
+            tests:
+              - not_null
+          - name: address_id
+            description: "Foreign key to staff address"
+            tests:
+              - not_null
+          - name: email
+            description: "Staff member email address"
+          - name: store_id
+            description: "Foreign key to store where staff member works"
+            tests:
+              - not_null
+          - name: active
+            description: "Whether staff member is active"
+            tests:
+              - not_null
+          - name: username
+            description: "Staff member username for login"
+            tests:
+              - not_null
+          - name: password
+            description: "Staff member password (encrypted)"
+          - name: last_update
+            description: "Timestamp of last update"
+            tests:
+              - not_null
+          - name: picture
+            description: "Staff member photo"
+
+      - name: store
+        description: "Information about rental stores"
+        columns:
+          - name: store_id
+            description: "Primary key for store"
+            tests:
+              - unique
+              - not_null
+          - name: manager_staff_id
+            description: "Foreign key to staff member managing the store"
+            tests:
+              - not_null
+          - name: address_id
+            description: "Foreign key to store address"
+            tests:
+              - not_null
+          - name: last_update
+            description: "Timestamp of last update"
+            tests:
+              - not_null
+
+      # Transaction tables
+      - name: rental
+        description: "Records of film rentals"
+        columns:
+          - name: rental_id
+            description: "Primary key for rental"
+            tests:
+              - unique
+              - not_null
+          - name: rental_date
+            description: "Date and time rental was made"
+            tests:
+              - not_null
+          - name: inventory_id
+            description: "Foreign key to inventory item rented"
+            tests:
+              - not_null
+          - name: customer_id
+            description: "Foreign key to customer renting"
+            tests:
+              - not_null
+          - name: return_date
+            description: "Date and time rental was returned"
+          - name: staff_id
+            description: "Foreign key to staff member who processed rental"
+            tests:
+              - not_null
+          - name: last_update
+            description: "Timestamp of last update"
+            tests:
+              - not_null
+
+      - name: payment
+        description: "Records of customer payments"
+        columns:
+          - name: payment_id
+            description: "Primary key for payment"
+            tests:
+              - unique
+              - not_null
+          - name: customer_id
+            description: "Foreign key to customer making payment"
+            tests:
+              - not_null
+          - name: staff_id
+            description: "Foreign key to staff member processing payment"
+            tests:
+              - not_null
+          - name: rental_id
+            description: "Foreign key to rental being paid for"
+            tests:
+              - not_null
+          - name: amount
+            description: "Payment amount"
+            tests:
+              - not_null
+          - name: payment_date
+            description: "Date and time payment was processed"
+            tests:
+              - not_null
+
+      - name: inventory
+        description: "Physical inventory of films at stores"
+        columns:
+          - name: inventory_id
+            description: "Primary key for inventory item"
+            tests:
+              - unique
+              - not_null
+          - name: film_id
+            description: "Foreign key to film"
+            tests:
+              - not_null
+          - name: store_id
+            description: "Foreign key to store holding inventory"
+            tests:
+              - not_null
+          - name: last_update
+            description: "Timestamp of last update"
+            tests:
+              - not_null
+
+      # Reference/lookup tables
+      - name: category
+        description: "Film categories (e.g., Action, Comedy, Drama)"
+        columns:
+          - name: category_id
+            description: "Primary key for category"
+            tests:
+              - unique
+              - not_null
+          - name: name
+            description: "Category name"
+            tests:
+              - not_null
+          - name: last_update
+            description: "Timestamp of last update"
+            tests:
+              - not_null
+
+      - name: language
+        description: "Languages available for films"
+        columns:
+          - name: language_id
+            description: "Primary key for language"
+            tests:
+              - unique
+              - not_null
+          - name: name
+            description: "Language name"
+            tests:
+              - not_null
+          - name: last_update
+            description: "Timestamp of last update"
+            tests:
+              - not_null
+
+      - name: address
+        description: "Address information for customers, staff, and stores"
+        columns:
+          - name: address_id
+            description: "Primary key for address"
+            tests:
+              - unique
+              - not_null
+          - name: address
+            description: "Street address line 1"
+            tests:
+              - not_null
+          - name: address2
+            description: "Street address line 2"
+          - name: district
+            description: "District or region"
+            tests:
+              - not_null
+          - name: city_id
+            description: "Foreign key to city"
+            tests:
+              - not_null
+          - name: postal_code
+            description: "Postal/ZIP code"
+          - name: phone
+            description: "Phone number"
+            tests:
+              - not_null
+          - name: last_update
+            description: "Timestamp of last update"
+            tests:
+              - not_null
+
+      - name: city
+        description: "City information"
+        columns:
+          - name: city_id
+            description: "Primary key for city"
+            tests:
+              - unique
+              - not_null
+          - name: city
+            description: "City name"
+            tests:
+              - not_null
+          - name: country_id
+            description: "Foreign key to country"
+            tests:
+              - not_null
+          - name: last_update
+            description: "Timestamp of last update"
+            tests:
+              - not_null
+
+      - name: country
+        description: "Country information"
+        columns:
+          - name: country_id
+            description: "Primary key for country"
+            tests:
+              - unique
+              - not_null
+          - name: country
+            description: "Country name"
+            tests:
+              - not_null
+          - name: last_update
+            description: "Timestamp of last update"
+            tests:
+              - not_null
+
+      # Junction/bridge tables
+      - name: film_actor
+        description: "Many-to-many relationship between films and actors"
+        columns:
+          - name: actor_id
+            description: "Foreign key to actor (part of composite primary key)"
+            tests:
+              - not_null
+          - name: film_id
+            description: "Foreign key to film (part of composite primary key)"
+            tests:
+              - not_null
+          - name: last_update
+            description: "Timestamp of last update"
+            tests:
+              - not_null
+
+      - name: film_category
+        description: "Many-to-many relationship between films and categories"
+        columns:
+          - name: film_id
+            description: "Foreign key to film (part of composite primary key)"
+            tests:
+              - not_null
+          - name: category_id
+            description: "Foreign key to category (part of composite primary key)"
+            tests:
+              - not_null
+          - name: last_update
+            description: "Timestamp of last update"
+            tests:
+              - not_null
+
+      # Views (read-only, for reporting)
+      - name: actor_info
+        description: "Denormalized view of actors and their films"
+        columns:
+          - name: actor_id
+            description: "Actor identifier"
+          - name: first_name
+            description: "Actor first name"
+          - name: last_name
+            description: "Actor last name"
+          - name: film_info
+            description: "Comma-separated list of film titles and categories"
+
+      - name: customer_list
+        description: "Denormalized view of customer information with addresses"
+        columns:
+          - name: id
+            description: "Customer identifier"
+          - name: name
+            description: "Customer full name"
+          - name: address
+            description: "Customer street address"
+          - name: zip_code
+            description: "Customer postal code"
+            meta:
+              # Note: Column name in source has space
+              airbyte_name: "zip code"
+          - name: phone
+            description: "Customer phone number"
+          - name: city
+            description: "Customer city"
+          - name: country
+            description: "Customer country"
+          - name: notes
+            description: "Customer notes (active/inactive status)"
+          - name: sid
+            description: "Store identifier where customer is registered"
+
+      - name: film_list
+        description: "Denormalized view of films with category and actors"
+        columns:
+          - name: fid
+            description: "Film identifier"
+          - name: title
+            description: "Film title"
+          - name: description
+            description: "Film description"
+          - name: category
+            description: "Film category"
+          - name: price
+            description: "Film rental price"
+          - name: length
+            description: "Film length in minutes"
+          - name: rating
+            description: "Film rating"
+          - name: actors
+            description: "Comma-separated list of actors"
+
+      - name: nicer_but_slower_film_list
+        description: "Alternative denormalized view of films (slower but formatted better)"
+        columns:
+          - name: fid
+            description: "Film identifier"
+          - name: title
+            description: "Film title"
+          - name: description
+            description: "Film description"
+          - name: category
+            description: "Film category"
+          - name: price
+            description: "Film rental price"
+          - name: length
+            description: "Film length in minutes"
+          - name: rating
+            description: "Film rating"
+          - name: actors
+            description: "Comma-separated list of actors"
+
+      - name: sales_by_film_category
+        description: "Aggregated sales by film category"
+        columns:
+          - name: category
+            description: "Film category"
+          - name: total_sales
+            description: "Total sales amount for the category"
+
+      - name: sales_by_store
+        description: "Aggregated sales by store"
+        columns:
+          - name: store
+            description: "Store location (city, country)"
+          - name: manager
+            description: "Store manager name"
+          - name: total_sales
+            description: "Total sales amount for the store"
+
+      - name: staff_list
+        description: "Denormalized view of staff information with addresses"
+        columns:
+          - name: id
+            description: "Staff identifier"
+          - name: name
+            description: "Staff full name"
+          - name: address
+            description: "Staff street address"
+          - name: zip_code
+            description: "Staff postal code"
+            meta:
+              # Note: Column name in source has space
+              airbyte_name: "zip code"
+          - name: phone
+            description: "Staff phone number"
+          - name: city
+            description: "Staff city"
+          - name: country
+            description: "Staff country"
+          - name: sid
+            description: "Store identifier where staff works"
+

@@ -1,0 +1,103 @@
+version: 2
+
+models:
+  - name: stg_customer
+    description: "Staging table for customer data with cleaned column names"
+    columns:
+      - name: customer_id
+        description: "Primary key for customer"
+        tests:
+          - unique
+          - not_null
+      - name: email
+        description: "Customer email address"
+        tests:
+          - not_null
+      - name: is_active
+        description: "Whether customer is active"
+        tests:
+          - not_null
+
+  - name: stg_film
+    description: "Staging table for film data"
+    columns:
+      - name: film_id
+        description: "Primary key for film"
+        tests:
+          - unique
+          - not_null
+      - name: title
+        description: "Film title"
+        tests:
+          - not_null
+      - name: rental_rate
+        description: "Rental rate for the film"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: true
+
+  - name: stg_rental
+    description: "Staging table for rental transactions"
+    columns:
+      - name: rental_id
+        description: "Primary key for rental"
+        tests:
+          - unique
+          - not_null
+      - name: rental_date
+        description: "Date rental was made"
+        tests:
+          - not_null
+      - name: customer_id
+        description: "Foreign key to customer"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_customer')
+              field: customer_id
+      - name: inventory_id
+        description: "Foreign key to inventory"
+        tests:
+          - not_null
+
+  - name: stg_payment
+    description: "Staging table for payment transactions"
+    columns:
+      - name: payment_id
+        description: "Primary key for payment"
+        tests:
+          - unique
+          - not_null
+      - name: amount
+        description: "Payment amount"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: true
+      - name: customer_id
+        description: "Foreign key to customer"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_customer')
+              field: customer_id
+
+  - name: stg_inventory
+    description: "Staging table for inventory"
+    columns:
+      - name: inventory_id
+        description: "Primary key for inventory"
+        tests:
+          - unique
+          - not_null
+      - name: film_id
+        description: "Foreign key to film"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_film')
+              field: film_id
+

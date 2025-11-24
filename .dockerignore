@@ -1,0 +1,47 @@
+# Git
+.git
+.gitignore
+.github
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# dbt
+data_transformation/dvd_rental/target/
+data_transformation/dvd_rental/dbt_packages/
+data_transformation/dvd_rental/logs/
+data_transformation/dvd_rental/.user.yml
+
+# Data source (not needed in container)
+data_source/
+
+# Documentation
+*.md
+!README.md
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Temporary files
+*.tmp
+*.log
+
+# Sensitive files (already excluded but double-check)
+*.env
+.env.*
+profiles.yml
+credentials.json
+

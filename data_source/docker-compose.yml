@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  my-postgres:
+    image: postgres:14
+    container_name: my-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: dvd_rental
+    ports:
+      - "5433:5432"
+    volumes:
+      - my-postgres:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  my-postgres:
+

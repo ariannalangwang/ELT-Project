@@ -1,0 +1,24 @@
+{{
+    config(
+        materialized='view',
+        tags=['staging']
+    )
+}}
+
+with source as (
+    select * from {{ source('dvd_rental', 'payment') }}
+),
+
+cleaned as (
+    select
+        payment_id,
+        customer_id,
+        staff_id,
+        rental_id,
+        amount,
+        payment_date
+    from source
+)
+
+select * from cleaned
+

@@ -1,0 +1,190 @@
+version: 2
+
+models:
+  - name: dim_customer
+    description: "Customer dimension with full address and geographic information"
+    columns:
+      - name: customer_id
+        description: "Primary key for customer dimension"
+        tests:
+          - unique
+          - not_null
+      - name: full_name
+        description: "Customer full name"
+        tests:
+          - not_null
+      - name: email
+        description: "Customer email"
+        tests:
+          - not_null
+      - name: customer_location
+        description: "Customer city and country"
+        tests:
+          - not_null
+
+  - name: dim_film
+    description: "Film dimension with category and derived attributes"
+    columns:
+      - name: film_id
+        description: "Primary key for film dimension"
+        tests:
+          - unique
+          - not_null
+      - name: title
+        description: "Film title"
+        tests:
+          - not_null
+      - name: category_name
+        description: "Film category"
+        tests:
+          - not_null
+      - name: film_length_category
+        description: "Categorized film length (Short/Medium/Long)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Short', 'Medium', 'Long']
+      - name: rental_rate_category
+        description: "Categorized rental rate"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Budget', 'Standard', 'Premium', 'Luxury']
+
+  - name: dim_store
+    description: "Store dimension with full address information"
+    columns:
+      - name: store_id
+        description: "Primary key for store dimension"
+        tests:
+          - unique
+          - not_null
+      - name: store_location
+        description: "Store city and country"
+        tests:
+          - not_null
+
+  - name: dim_date
+    description: "Date dimension for time-based analysis"
+    columns:
+      - name: date_day
+        description: "Primary key - the date"
+        tests:
+          - unique
+          - not_null
+      - name: year
+        description: "Year"
+        tests:
+          - not_null
+      - name: month
+        description: "Month number (1-12)"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 1
+              max_value: 12
+              inclusive: true
+      - name: quarter
+        description: "Quarter (1-4)"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 1
+              max_value: 4
+              inclusive: true
+
+  - name: fct_rental
+    description: "Fact table for rental transactions with all measures and foreign keys"
+    columns:
+      - name: rental_id
+        description: "Primary key for fact table"
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: "Foreign key to customer dimension"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_customer')
+              field: customer_id
+      - name: film_id
+        description: "Foreign key to film dimension"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_film')
+              field: film_id
+      - name: store_id
+        description: "Foreign key to store dimension"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_store')
+              field: store_id
+      - name: payment_amount
+        description: "Actual payment amount"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: true
+      - name: rental_duration_days
+        description: "Actual rental duration in days"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: true
+      - name: days_overdue
+        description: "Number of days overdue"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: true
+
+  - name: rental_analytics
+    description: "Final denormalized BI table combining all dimensions and facts"
+    columns:
+      - name: rental_id
+        description: "Primary key"
+        tests:
+          - unique
+          - not_null
+      - name: customer_name
+        description: "Full customer name"
+        tests:
+          - not_null
+      - name: film_title
+        description: "Film title"
+        tests:
+          - not_null
+      - name: return_status
+        description: "Status of rental return"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Not Returned', 'Late Return', 'On Time']
+      - name: payment_status
+        description: "Status of payment"
+        tests:
+          - accepted_values:
+              values: ['Overpaid', 'Underpaid', 'Exact', 'No Payment']
+      - name: total_revenue
+        description: "Total revenue including late fees"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: true
+      - name: rental_year
+        description: "Year of rental"
+        tests:
+          - not_null
+      - name: rental_quarter
+        description: "Quarter of rental"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 1
+              max_value: 4
+              inclusive: true
+
