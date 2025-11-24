@@ -15,20 +15,6 @@ Automated ELT (Extract, Load, Transform) pipeline that syncs data from a Postgre
 | **Containerization** | Docker |
 | **Language** | Python 3.13, SQL |
 
-
----
-
-## Key Takeaways
-
-- **Fully automated** - No manual intervention needed after setup
-- **Secure** - No secrets in code, all via environment variables
-- **Tested** - 54 dbt tests ensure data quality
-- **Documented** - dbt docs explain all transformations
-- **Containerized** - Docker ensures consistent execution
-- **Monitored** - GitHub Actions provides full visibility
-
-**Just push to `main` and let the pipeline do its magic!** 
-
 ---
 
 ## Project Overview
