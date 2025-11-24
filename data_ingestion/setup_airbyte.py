@@ -493,18 +493,19 @@ class AirbyteClient:
 def main():
     """Main setup function."""
     
-    # Configuration - Use environment variables for sensitive data
-    # For Self-Managed Airbyte: Use Client Credentials (from 'abctl local credentials')
-    # See: https://docs.airbyte.com/platform/using-airbyte/configuring-api-access
-    AIRBYTE_URL = os.getenv("AIRBYTE_URL")
+    # ========================================
+    # CONFIGURATION - Update these values
+    # ========================================
+    # Airbyte instance configuration (non-sensitive)
+    AIRBYTE_URL = "http://localhost:8000/api"  # Your Airbyte API URL
+    WORKSPACE_ID = "your-workspace-id-here"     # Your Airbyte workspace ID
+    
+    # Credentials (from environment variables - keep as secrets)
     CLIENT_ID = os.getenv("AIRBYTE_CLIENT_ID")
     CLIENT_SECRET = os.getenv("AIRBYTE_CLIENT_SECRET")
     
     # Alternative: Use a pre-obtained access token directly
     ACCESS_TOKEN = os.getenv("AIRBYTE_ACCESS_TOKEN")
-    
-    # Workspace ID (required)
-    WORKSPACE_ID = os.getenv("AIRBYTE_WORKSPACE_ID")
     
     # Databricks configuration (from environment variables)
     DATABRICKS_HOST = os.getenv("DATABRICKS_HOST")

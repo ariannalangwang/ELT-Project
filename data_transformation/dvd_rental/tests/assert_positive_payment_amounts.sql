@@ -8,3 +8,4 @@ select
 from {{ ref('fct_rental') }}
 where payment_amount < 0
 
+

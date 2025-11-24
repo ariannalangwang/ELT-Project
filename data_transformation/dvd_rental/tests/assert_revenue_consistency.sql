@@ -10,3 +10,4 @@ select
 from {{ ref('rental_analytics') }}
 where abs(total_revenue - (actual_payment + calculated_late_fee)) > 0.01
 
+

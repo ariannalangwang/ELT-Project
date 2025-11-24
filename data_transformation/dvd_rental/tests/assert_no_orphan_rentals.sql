@@ -9,3 +9,4 @@ left join {{ ref('dim_customer') }} c
     on f.customer_id = c.customer_id
 where c.customer_id is null
 
+

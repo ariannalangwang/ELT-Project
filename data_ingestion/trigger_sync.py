@@ -1,6 +1,7 @@
 """
 Trigger a manual sync for an existing Airbyte connection.
-Usage: python trigger_sync.py <connection_id>
+Usage: python trigger_sync.py [connection_id]
+If connection_id is not provided, uses the default from configuration.
 """
 
 import sys
@@ -12,17 +13,24 @@ from setup_airbyte import AirbyteClient
 def main():
     """Trigger a sync for a connection."""
     
-    if len(sys.argv) < 2:
-        print("Usage: python trigger_sync.py <connection_id>")
-        sys.exit(1)
+    # ========================================
+    # CONFIGURATION - Update these values
+    # ========================================
+    # Airbyte instance configuration (non-sensitive)
+    AIRBYTE_URL = "http://localhost:8000/api"  # Your Airbyte API URL
+    WORKSPACE_ID = "your-workspace-id-here"     # Your Airbyte workspace ID
+    CONNECTION_ID = "your-connection-id-here"   # Your Airbyte connection ID
     
-    connection_id = sys.argv[1]
-    
-    # Configuration - Use environment variables for sensitive data
-    AIRBYTE_URL = os.getenv("AIRBYTE_URL")
+    # Credentials (from environment variables - keep as secrets)
     CLIENT_ID = os.getenv("AIRBYTE_CLIENT_ID")
     CLIENT_SECRET = os.getenv("AIRBYTE_CLIENT_SECRET")
-    WORKSPACE_ID = os.getenv("AIRBYTE_WORKSPACE_ID")
+    
+    # Allow connection_id override from command line
+    if len(sys.argv) >= 2:
+        connection_id = sys.argv[1]
+    else:
+        connection_id = CONNECTION_ID
+        print(f"Using default connection ID from configuration: {connection_id}")
     
     try:
         client = AirbyteClient(

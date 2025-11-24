@@ -9,3 +9,4 @@ from {{ ref('fct_rental') }}
 where return_date is not null
   and return_date < rental_date
 
+

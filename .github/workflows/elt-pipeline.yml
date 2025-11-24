@@ -11,6 +11,10 @@ on:
 
 env:
   PYTHON_VERSION: '3.13'
+  # Airbyte Configuration (non-sensitive)
+  AIRBYTE_URL: 'http://your-airbyte-host:8000/api'
+  AIRBYTE_WORKSPACE_ID: 'your-workspace-id-here'
+  AIRBYTE_CONNECTION_ID: 'your-connection-id-here'
 
 jobs:
   # Job 1: Build and Push Docker Image
@@ -61,7 +65,6 @@ jobs:
             DATABRICKS_TOKEN=${{ secrets.DATABRICKS_TOKEN }}
             AIRBYTE_CLIENT_ID=${{ secrets.AIRBYTE_CLIENT_ID }}
             AIRBYTE_CLIENT_SECRET=${{ secrets.AIRBYTE_CLIENT_SECRET }}
-            AIRBYTE_WORKSPACE_ID=${{ secrets.AIRBYTE_WORKSPACE_ID }}
 
       - name: Output image information
         run: |
@@ -92,14 +95,14 @@ jobs:
 
       - name: Trigger Airbyte sync
         env:
-          AIRBYTE_URL: ${{ secrets.AIRBYTE_URL }}
           AIRBYTE_CLIENT_ID: ${{ secrets.AIRBYTE_CLIENT_ID }}
           AIRBYTE_CLIENT_SECRET: ${{ secrets.AIRBYTE_CLIENT_SECRET }}
-          AIRBYTE_WORKSPACE_ID: ${{ secrets.AIRBYTE_WORKSPACE_ID }}
-          AIRBYTE_CONNECTION_ID: ${{ secrets.AIRBYTE_CONNECTION_ID }}
         run: |
           echo "🔄 Triggering Airbyte sync..."
-          python data_ingestion/trigger_sync.py $AIRBYTE_CONNECTION_ID
+          echo "Airbyte URL: ${{ env.AIRBYTE_URL }}"
+          echo "Workspace ID: ${{ env.AIRBYTE_WORKSPACE_ID }}"
+          echo "Connection ID: ${{ env.AIRBYTE_CONNECTION_ID }}"
+          python data_ingestion/trigger_sync.py ${{ env.AIRBYTE_CONNECTION_ID }}
           echo "✅ Airbyte sync triggered successfully!"
 
       - name: Wait for sync completion (optional)
