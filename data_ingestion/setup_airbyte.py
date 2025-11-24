@@ -493,14 +493,8 @@ class AirbyteClient:
 def main():
     """Main setup function."""
     
-    # ========================================
-    # CONFIGURATION - Update these values
-    # ========================================
-    # Airbyte instance configuration (non-sensitive)
-    AIRBYTE_URL = "http://localhost:8000/api"  # Your Airbyte API URL
-    WORKSPACE_ID = "your-workspace-id-here"     # Your Airbyte workspace ID
-    
-    # Credentials (from environment variables - keep as secrets)
+    # Configuration
+    AIRBYTE_URL = os.getenv("AIRBYTE_URL", "http://localhost:8000/api")
     CLIENT_ID = os.getenv("AIRBYTE_CLIENT_ID")
     CLIENT_SECRET = os.getenv("AIRBYTE_CLIENT_SECRET")
     
@@ -543,14 +537,12 @@ def main():
             client = AirbyteClient(
                 AIRBYTE_URL,
                 client_id=CLIENT_ID,
-                client_secret=CLIENT_SECRET,
-                workspace_id=WORKSPACE_ID
+                client_secret=CLIENT_SECRET
             )
         elif ACCESS_TOKEN:
             client = AirbyteClient(
                 AIRBYTE_URL,
-                api_key=ACCESS_TOKEN,
-                workspace_id=WORKSPACE_ID
+                api_key=ACCESS_TOKEN
             )
         else:
             raise Exception("Please provide either CLIENT_ID/CLIENT_SECRET or ACCESS_TOKEN")
@@ -558,8 +550,8 @@ def main():
         # Authenticate
         client.authenticate()
         
-        # Get workspace (use provided ID if available)
-        client.get_workspace(workspace_id=WORKSPACE_ID)
+        # Auto-discover workspace (uses first workspace if multiple exist)
+        client.get_workspace()
         
         # Check for existing resources first
         print("\n" + "=" * 60)

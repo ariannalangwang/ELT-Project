@@ -56,31 +56,7 @@ git clone https://github.com/ariannalangwang/elt-project.git
 cd elt-project
 ```
 
-### 2. Configure Airbyte Connection IDs
-
-Edit the following files with your Airbyte configuration:
-
-**a) Update `.github/workflows/elt-pipeline.yml`** (lines 15-17):
-```yaml
-AIRBYTE_URL: 'http://your-airbyte-host:8000/api'
-AIRBYTE_WORKSPACE_ID: 'your-workspace-id-here'
-AIRBYTE_CONNECTION_ID: 'your-connection-id-here'
-```
-
-**b) Update `data_ingestion/trigger_sync.py`** (lines 15-17):
-```python
-AIRBYTE_URL = "http://localhost:8000/api"
-WORKSPACE_ID = "your-workspace-id-here"
-CONNECTION_ID = "your-connection-id-here"
-```
-
-**c) Update `data_ingestion/setup_airbyte.py`** (lines 502-503):
-```python
-AIRBYTE_URL = "http://localhost:8000/api"
-WORKSPACE_ID = "your-workspace-id-here"
-```
-
-### 3. Set Up GitHub Secrets
+### 2. Set Up GitHub Secrets
 
 Go to **Settings → Secrets and variables → Actions** and add:
 
@@ -89,12 +65,15 @@ Go to **Settings → Secrets and variables → Actions** and add:
 | `DATABRICKS_HOST` | Databricks workspace URL (e.g., `dbc-xxx.cloud.databricks.com`) |
 | `DATABRICKS_HTTP_PATH` | SQL warehouse → Connection Details → HTTP Path |
 | `DATABRICKS_TOKEN` | User Settings → Developer → Access Tokens |
-| `AIRBYTE_CLIENT_ID` | Airbyte → Settings → Applications |
-| `AIRBYTE_CLIENT_SECRET` | Airbyte → Settings → Applications |
+| `AIRBYTE_URL` | Your Airbyte API URL (e.g., `http://your-host:8000/api`) |
+| `AIRBYTE_CLIENT_ID` | Airbyte → Settings → Applications → Client ID |
+| `AIRBYTE_CLIENT_SECRET` | Airbyte → Settings → Applications → Client Secret |
 
-**Total: 5 secrets required** (credentials only)
+**Total: 6 secrets required**
 
-### 4. Push to GitHub
+**Note:** Workspace and Connection IDs are auto-discovered at runtime - no manual configuration needed!
+
+### 3. Push to GitHub
 
 ```bash
 git add .
@@ -145,11 +124,14 @@ uv sync
 # Load environment variables
 set -a && source .env && set +a
 
-# Trigger sync (uses connection ID from config)
+# Trigger sync (auto-discovers first active connection)
 python data_ingestion/trigger_sync.py
 
-# Or override with specific connection ID
-python data_ingestion/trigger_sync.py YOUR_CONNECTION_ID
+# Or specify connection by name
+python data_ingestion/trigger_sync.py "dvd_rental → Databricks"
+
+# Or by connection ID
+python data_ingestion/trigger_sync.py abc-123-def-456
 ```
 
 #### Run dbt Transformations
